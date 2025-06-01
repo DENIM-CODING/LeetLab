@@ -50,6 +50,7 @@ export const createProblem = async (req, res) => {
          const results = await pollBatchResults(tokens);
 
          for(let i = 0; i < results.length; i++){
+            console.log("Result-----",result);
             const result = results[i];
             if (result.status.id !== 3) {
                 return res.status(400).json({
@@ -117,3 +118,6 @@ export const deleteProblem = async (req, res) => {
 export const getAllProblemsSolvedByUser = async (req, res) => {
 
 }
+
+
+//testing
