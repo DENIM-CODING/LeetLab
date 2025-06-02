@@ -1,5 +1,5 @@
 import {db} from "../libs/db.js"
-import { getJudge0LanguageId, submitBatch } from "../libs/judge0.lib.js";
+import { getJudge0LanguageId, pollBatchResults, submitBatch } from "../libs/judge0.lib.js";
 
 
 export const createProblem = async (req, res) => {
@@ -49,9 +49,13 @@ export const createProblem = async (req, res) => {
 
          const results = await pollBatchResults(tokens);
 
+         console.log("Judge0 Results:", JSON.stringify(results, null, 2));
+
          for(let i = 0; i < results.length; i++){
-            console.log("Result-----",result);
+            
             const result = results[i];
+
+            console.log("Result-----",result);
             if (result.status.id !== 3) {
                 return res.status(400).json({
                     error: `Testcase ${i + 1} failed for language ${language}`,
