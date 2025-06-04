@@ -13,7 +13,7 @@ export const getJudge0LanguageId = (language) => {
 }
 
 
-//would hit the endpoint of judge0 (refer to judge0 docs in submission/create a batch section)
+//would hit the endpoint of judge0 (have to refer to judge0 docs in submission/create a batch section)
 //when we hit the url first time it would give me token in an array
 export const submitBatch = async (submissions)=>{
     const {data} = await axios.post(`${process.env.JUDGE0_API_URL}/submissions/batch?base64_encoded=false`,{
@@ -51,3 +51,14 @@ export const pollBatchResults = async (tokens)=>{
         await sleep(1000)
     }
 }
+
+export function getLanguageName(languageId){
+    const LANGUAGE_NAMES = {
+        74: "TypeScript",
+        63: "JavaScript",
+        71: "Python",
+        62: "Java",
+    }
+
+    return LANGUAGE_NAMES[languageId] || "Unknown"
+} //can use judge0 to retrieve but for now hardcoded
