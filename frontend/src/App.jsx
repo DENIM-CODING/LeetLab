@@ -7,6 +7,7 @@ import HomePage from './page/HomePage.jsx'
 import SignUpPage from './page/SignUpPage.jsx'
 import { Loader } from 'lucide-react'
 import { useAuthStore } from './store/useAuthStore.js'
+import Layout from './layout/Layout.jsx'
 
 
 const App = () => {
@@ -29,10 +30,14 @@ const App = () => {
     <div className='flex flex-col items-center justify-start'>
       <Toaster/>
       <Routes>
-        <Route
-        path='/'
-        element={authUser ? <HomePage /> : <Navigate to={"/login"} />}
-        />
+
+        <Route path="/" element={<Layout />}>
+          <Route
+            index
+            element={authUser ? <HomePage /> : <Navigate to={"/login"} />}
+          />
+        </Route>
+
         <Route
           path="/login"
           element={!authUser ? <LoginPage /> : <Navigate to={"/"} />}
