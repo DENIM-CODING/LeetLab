@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Route, Navigate, Routes} from "react-router-dom"
 import { Toaster } from 'react-hot-toast'
 
@@ -6,6 +6,7 @@ import LoginPage from './page/LoginPage.jsx'
 import HomePage from './page/HomePage.jsx'
 import SignUpPage from './page/SignUpPage.jsx'
 import { Loader } from 'lucide-react'
+import { useAuthStore } from './store/useAuthStore.js'
 
 
 const App = () => {
