@@ -8,6 +8,8 @@ import SignUpPage from './page/SignUpPage.jsx'
 import { Loader } from 'lucide-react'
 import { useAuthStore } from './store/useAuthStore.js'
 import Layout from './layout/Layout.jsx'
+import AdminRoute from './components/AdminRoute.jsx'
+import AddProblem from './page/AddProblem.jsx'
 
 
 const App = () => {
@@ -48,6 +50,13 @@ const App = () => {
           element={!authUser ? <SignUpPage /> : <Navigate to={"/"} />}
         />
         
+        <Route element={<AdminRoute />}>
+          <Route
+            path="/add-problem"
+            element={authUser ? <AddProblem /> : <Navigate to="/" />}
+          />
+        </Route>
+
       </Routes>
 
     </div>
