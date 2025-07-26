@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { Link } from "react-router-dom";
 import { Bookmark, PencilIcon, Trash, TrashIcon, Plus } from "lucide-react";
+import { useActions } from "../store/useAction";
 
 const ProblemTable = ({problems}) => {
 
@@ -12,6 +13,7 @@ const ProblemTable = ({problems}) => {
   const [difficulty, setDifficulty] = useState("ALL");
   const [selectedTag, setSelectedTag] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
+  const { onDeleteProblem } = useActions();
   
   
   const allTags = useMemo(() => {
@@ -49,7 +51,7 @@ const ProblemTable = ({problems}) => {
   }, [filteredProblems, currentPage]);
   
   const handleDelete = (id) => {
-    
+    onDeleteProblem(id);
   };
 
   const handleCreatePlaylist = async (data) => {
