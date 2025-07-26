@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Bookmark, PencilIcon, Trash, TrashIcon, Plus } from "lucide-react";
 import { useActions } from "../store/useAction";
 import { usePlaylistStore } from "../store/usePlaylistStore";
+import AddToPlaylistModal from "./AddToPlaylist";
 import CreatePlaylistModal from "./CreatePlaylistModal";
 
 const ProblemTable = ({problems}) => {
@@ -19,6 +20,7 @@ const ProblemTable = ({problems}) => {
   const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] = useState(false);
   const { onDeleteProblem } = useActions();
   const { createPlaylist } = usePlaylistStore();
+  const [selectedProblemId, setSelectedProblemId] = useState(null);
   
   
   const allTags = useMemo(() => {
@@ -64,7 +66,8 @@ const ProblemTable = ({problems}) => {
   };
 
   const handleAddToPlaylist = (problemId) => {
-    
+    setSelectedProblemId(problemId);
+    setIsAddToPlaylistModalOpen(true);
   };
 
   return (
@@ -240,7 +243,11 @@ const ProblemTable = ({problems}) => {
         onSubmit={handleCreatePlaylist}
       />
       
-      
+      <AddToPlaylistModal
+        isOpen={isAddToPlaylistModalOpen}
+        onClose={() => setIsAddToPlaylistModalOpen(false)}
+        problemId={selectedProblemId}
+      />
       
     </div>
   )
