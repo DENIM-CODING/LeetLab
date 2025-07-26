@@ -20,15 +20,17 @@ import { Link, useParams } from "react-router-dom";
 
 
 import { useProblemStore } from "../store/useProblemStore";
-//import { getLanguageId } from "../lib/lang";
-// import { useExecutionStore } from "../store/useExecutionStore";
-// import { useSubmissionStore } from "../store/useSubmissionStore";
-// import Submission from "../components/Submission";
-// import SubmissionsList from "../components/SubmissionList";
+import { getLanguageId } from "../lib/lang";
+import { useExecutionStore } from "../store/useExecutionStore";
+import SubmissionResults from "../components/Submission";
+import { useSubmissionStore } from "../store/useSubmissionStore";
+import Submission from "../components/Submission";
+import SubmissionsList from "../components/SubmissionList";
 
 const ProblemPage = () => {
   const {id} = useParams();
   const { getProblemById, problem, isProblemLoading } = useProblemStore();
+  const { executeCode, submission, isExecuting } = useExecutionStore();
 
   const [code, setCode] = useState("");
   const [activeTab, setActiveTab] = useState("description");
@@ -36,11 +38,25 @@ const ProblemPage = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [testcases, setTestCases] = useState([]);
 
+
+  const {
+    submission: submissions,
+    isLoading: isSubmissionsLoading,
+    getSubmissionForProblem,
+    getSubmissionCountForProblem,
+    submissionCount,
+  } = useSubmissionStore();
   
   useEffect(() => {
     getProblemById(id);
-    
+    getSubmissionCountForProblem(id);
   }, [id]);
+
+  useEffect(() => {
+    if (activeTab === "submissions" && id) {
+      getSubmissionForProblem(id);
+    }
+  }, [activeTab, id]);
 
   const handleLanguageChange = (e) => {
     const lang = e.target.value;
@@ -62,8 +78,8 @@ const ProblemPage = () => {
     }
   }, [problem, selectedLanguage]);
   console.log("problem", problem);
-  const submissionCount = 10; //hardcoded for now
-  const submission = false; //hardcoded for now
+  
+  
 
   if (isProblemLoading || !problem) {
     return (
@@ -76,6 +92,17 @@ const ProblemPage = () => {
     );
   }
 
+  const handleRunCode = (e) => {
+    e.preventDefault();
+    try {
+      const language_id = getLanguageId(selectedLanguage);
+      const stdin = problem.testcases.map((tc) => tc.input);
+      const expected_outputs = problem.testcases.map((tc) => tc.output);
+      executeCode(code, language_id, stdin, expected_outputs, id);
+    } catch (error) {
+      console.log("Error executing code", error);
+    }
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -139,16 +166,11 @@ const ProblemPage = () => {
         );
       case "submissions":
         return (
-          <div className="p-4 text-center text-base-content/70">
-            No submissions yet
-          </div>
+          <SubmissionsList
+            submissions={submissions}
+            isLoading={isSubmissionsLoading}
+          />
         );
-        // return (
-        //   <SubmissionsList
-        //     submissions={submissions}
-        //     isLoading={isSubmissionsLoading}
-        //   />
-        // );
       case "discussion":
         return (
           <div className="p-4 text-center text-base-content/70">
@@ -198,7 +220,7 @@ const ProblemPage = () => {
               </span>
               <span className="text-base-content/30">•</span>
               <Users className="w-4 h-4" />
-              <span>{10} Submissions</span>
+              <span>{submissionCount} Submissions</span>
               <span className="text-base-content/30">•</span>
               <ThumbsUp className="w-4 h-4" />
               <span>95% Success Rate</span>
@@ -296,7 +318,7 @@ const ProblemPage = () => {
                   onChange={(value) => setCode(value || "")}
                   options={{
                     minimap: { enabled: false },
-                    fontSize: 20,
+                    fontSize: 14,
                     lineNumbers: "on",
                     roundedSelection: false,
                     scrollBeyondLastLine: false,
@@ -309,11 +331,13 @@ const ProblemPage = () => {
               <div className="p-4 border-t border-base-300 bg-base-200">
                 <div className="flex justify-between items-center">
                   <button
-                    className={`btn btn-primary gap-2`}
-                    onClick={()=>{}}
-                    
+                    className={`btn btn-primary gap-2 ${
+                      isExecuting ? "loading" : ""
+                    }`}
+                    onClick={handleRunCode}
+                    disabled={isExecuting}
                   >
-                    <Play className="w-4 h-4" />
+                    {!isExecuting && <Play className="w-4 h-4" />}
                     Run Code
                   </button>
                   <button className="btn btn-success gap-2">
@@ -328,7 +352,7 @@ const ProblemPage = () => {
         <div className="card bg-base-100 shadow-xl mt-6">
           <div className="card-body">
             {submission ? (
-              <h1>hello</h1>
+              <SubmissionResults submission={submission} />
             ) : (
               <>
                 <div className="flex items-center justify-between mb-6">
